@@ -9,6 +9,7 @@ def load(folder_path):
         input_file = open(os.path.join(folder_path, filename))
         lines = input_file.readlines()
         for line in lines:
+            line = line.rstrip()
             all_strings.append((line, get_label(line)))
     return all_strings
 
