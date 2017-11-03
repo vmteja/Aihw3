@@ -3,31 +3,34 @@
 import numpy as np
 import sys
 def mutate(listname, mutation_rate):
+    mutation_rate_by_3 = mutation_rate / 3
+    mutation_rate_rest = 1 - mutation_rate_by_3 * 3
+    p = [mutation_rate_rest, mutation_rate_by_3, mutation_rate_by_3, mutation_rate_by_3]
     l = len(listname)
     for i in range(0,l):
         if(listname[i]=='A'):
             ch = np.random.choice(
           ['A','B', 'C', 'D'], 
           1,
-          p=[1-mutation_rate,mutation_rate/3,mutation_rate/3,mutation_rate/3])
+          p=p)
             listname.append(ch[0])
         elif(listname[i]=='B'):
             ch = np.random.choice(
           ['B','A', 'C', 'D'], 
           1,
-          p=[1-mutation_rate,mutation_rate/3,mutation_rate/3,mutation_rate/3])
+          p=p)
             listname.append(ch[0])
         elif(listname[i]=='C'):
             ch = np.random.choice(
           ['C','B', 'A', 'D'], 
           1,
-          p=[1-mutation_rate,mutation_rate/3,mutation_rate/3, mutation_rate/3])
+          p=p)
             listname.append(ch[0])
         else:
             ch = np.random.choice(
           ['D','A','B', 'C'], 
           1,
-          p=[1-mutation_rate, mutation_rate/3,mutation_rate/3,mutation_rate/3])
+          p=p)
             listname.append(ch[0])
     
     

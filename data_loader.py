@@ -15,4 +15,4 @@ def load(folder_path):
 
 
 if __name__ == '__main__':
-    print load("/Users/atipirisetty/Desktop/Workspace/Aihw3/data")
+    print load("test_folder_01")
