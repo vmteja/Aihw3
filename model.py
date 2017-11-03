@@ -1,7 +1,7 @@
 
 import tensorflow as tf
 import math
-import model_helper_funcs
+from model_helper_funcs import * 
 
 batch_size = 64 
 no_epochs = 3
@@ -43,7 +43,7 @@ def classifier(data):
     gc.collect() 
 
     # Features and Labels
-    n_input = 40  # input array lenght 
+    n_input = 40  # input array length
     n_classes = 6 # no of classes 
     # the 'None' in dimension below takes care of  the size of the batch 
     features = tf.placeholder(tf.float32, [None, n_input]) 
