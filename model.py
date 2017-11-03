@@ -1,33 +1,56 @@
 
-
 import tensorflow as tf
 import math
 
 mini_batch_size = 64 
 
-# creates batches from  given dataset 
-def create_batches():
-    pass
-
-# creates a 5 layer dense neural network 
 def dense_nn(X):
-    layer_1_out = tf.contrib.layers.fully_connected(inputs,40, activation_fn=tf.nn.relu)
+    """
+    creates a 5 layer dense neural network, all hidden layers with ReLU activation
+    while last layer has softmax activation 
+    """
+    layer_1_out = tf.contrib.layers.fully_connected(X,40, activation_fn=tf.nn.relu)
     layer_2_out = tf.contrib.layers.fully_connected(layer_1_out,40, activation_fn=tf.nn.relu)
     layer_3_out = tf.contrib.layers.fully_connected(layer_2_out,20, activation_fn=tf.nn.relu)
     layer_4_out = tf.contrib.layers.fully_connected(layer_3_out,10, activation_fn=tf.nn.relu)
     layer_5_out = tf.contrib.layers.fully_connected(layer_4_out,6, activation_fn=tf.nn.softmax)
     return layer_5_out 
 
-def session_optimizer():
+def randomize_data(data):
+    """
+    randomly re-arrange the data in the list 
+    """
     pass 
 
+def convert_to_numeric(data):
+    """
+    converts the 40 length strings of the input data to numeric
+    input is a list of tuples. Each tuple has a string of length 40 and label to which it belongs to.
+    returns  a list of tuples 
+    """
+    #-- should labels also be changed numeric or are they already provided in numeric format ? 
+    pass 
 
-def dense_layer(X, w_h, w_o):
-    h = tf.nn.sigmoid(tf.matmul(X, w_h)) # this is a basic mlp, think 2 stacked logistic regressions
-    return tf.matmul(h, w_o) # note that we dont take the softmax at the end because our cost fn does that for us
+def create_train_valid(data, split_fraction):
+    """
+    splits the data into train and validation sets 
+    """
+    l = len(data)
+    split_size = int(l*split_fraction)
+    train_data = data[:split_size]
+    valid_data = data[split_size:]
+    return train_data, valid_data
+
+def seperate_data_lables(data):
+    """
+    seperates data and their respective labels 
+    returns two lists; one a list of data elements (40-leng numeric arrays),
+    second list is the labels at their their corresponding indexes 
+    """
+    pass
 
 
-def classifier():
+def classifier(data):
 
     '''
     todo:
@@ -35,26 +58,24 @@ def classifier():
      2. create batches 
      3. seperate data and labels
      4. create train data and validation data  
-    #get the data and its labels 
-    #X_data = 
-    #Y_labels = 
-    
-    #split the data into training and validation sets
-    split_size = int(X_data.shape[0]*0.8)
-    train_x, val_x = X_data[:split_size], X_data[split_size:]
-    train_y, val_y = Y_labels[:split_size], Y_labels[split_size:]
-    ''' 
- 
-    # Model input and output 
+    '''
+    # randomly rearranging the input list 
+    data = randomize_data(data)
+
+    # converting to numeric 
+    data = convert_to_numeric(data)
+
+    # split data into train and valid sets 
+    train_data, valid_data = create_train_valid(data, 0.9)
+
+    # seperating data elements and their labels 
+    train_x, train_y = seperate_data_lables(train_data)
+    valid_x, valid_y = seperate_data_lables(valid_data)
+
+    # declare Model's input and output 
     # what should be the dimensions if batches are passed ? 
     X = tf.placeholder(tf.float32, shape=(2,1))
-    Y = tf.placeholder(tf.float32, shape=(6))
-
-    '''
-    # layer-1 parameters
-    w1 = tf.get_variable("w1", shape=(2,2), initializer = uniform_init)
-    b1 = tf.get_variable("b1", shape=(2,1), initializer = uniform_init)
-    '''
+    y_pred = tf.placeholder(tf.float32, shape=(6))
 
     # network architecuture
     y_pred = dense_nn(X)
