@@ -10,9 +10,10 @@ def load(folder_path):
         lines = input_file.readlines()
         for line in lines:
             line = line.rstrip()
-            all_strings.append((line, get_label(line)))
+            all_strings.append((list(line), get_label(line)))
     return all_strings
 
 
 if __name__ == '__main__':
-    print load("test_folder_01")
+    for i in load("test_folder_01"):
+        print i

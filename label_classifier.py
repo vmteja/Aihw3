@@ -20,7 +20,9 @@ LABELS = [
 
 
 def get_label_tuple(index):
-    return index, LABELS[index]
+    id_list = [0] * len(LABELS)
+    id_list[index] = 1
+    return id_list, LABELS[index]
 
 def get_label(input_string):
     max_stick = get_max_sticky(input_string)
