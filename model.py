@@ -2,7 +2,8 @@
 import tensorflow as tf
 import math
 
-mini_batch_size = 64 
+batch_size = 64 
+no_epochs = 100
 
 def dense_nn(X):
     """
@@ -52,13 +53,6 @@ def seperate_data_lables(data):
 
 def classifier(data):
 
-    '''
-    todo:
-     1. read the input data and convert them to integers 
-     2. create batches 
-     3. seperate data and labels
-     4. create train data and validation data  
-    '''
     # randomly rearranging the input list 
     data = randomize_data(data)
 
@@ -87,10 +81,11 @@ def classifier(data):
     optimizer = tf.train.GradientDescentOptimizer(0.01)
     train = optimizer.minimize(loss)
 
-    save_file = './train_model.ckpt'
-    batch_size = 128
-    n_epochs = 100
+    # training parameters 
+    data_size = len(data)
+    no_bacthes = math.ceil(data_size/batch_size)
 
+    save_file = './train_model.ckpt'
     saver = tf.train.Saver()
 
     # Launch the graph
@@ -98,23 +93,14 @@ def classifier(data):
          sess.run(tf.global_variables_initializer())
 
          # Training cycle
-         for epoch in range(n_epochs):
-
+         for epoch in range(no_epochs):
              # Loop over all batches
              for i in range(total_batch):
-                 sess.run(
-                          optimizer,
-                          feed_dict={features: data_x, labels: data_y)
+                 sess.run(optimizer,feed_dict={features: data_x, labels: data_y)
 
              # Print status for every epochs
-             valid_accuracy = sess.run(
-                                       accuracy,
-                                       feed_dict={
-                                                  features: val_x
-                                                 labels: val_y})
-            print('Epoch {:<3} - Validation Accuracy: {}'.format(
-                epoch,
-                valid_accuracy))
+             valid_accuracy = sess.run(accuracy, feed_dict={features: val_x,labels: val_y})
+             print('Epoch {:<3} - Validation Accuracy: {}'.format(epoch,valid_accuracy))
 
     # Save the model
     saver.save(sess, save_file)
