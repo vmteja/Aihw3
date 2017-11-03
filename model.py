@@ -1,9 +1,10 @@
 
 import tensorflow as tf
 import math
+import model_helper_funcs
 
 batch_size = 64 
-no_epochs = 100
+no_epochs = 3
 
 def dense_nn(X):
     """
@@ -17,56 +18,6 @@ def dense_nn(X):
     layer_5_out = tf.contrib.layers.fully_connected(layer_4_out,6, activation_fn=tf.nn.softmax)
     return layer_5_out 
 
-def randomize_data(data):
-    """
-    randomly re-arrange the data in the list 
-    """
-    pass 
-
-def convert_to_numeric(data):
-    """
-    converts the 40 length strings of the input data to numeric
-    input is a list of tuples. Each tuple has a string of length 40 and label to which it belongs to.
-    returns  a list of tuples 
-    """
-    #-- should labels also be changed numeric or are they already provided in numeric format ? 
-    pass 
-
-def create_train_valid(data, split_fraction):
-    """
-    splits the data into train and validation sets 
-    """
-    l = len(data)
-    split_size = int(l*split_fraction)
-    train_data = data[:split_size]
-    valid_data = data[split_size:]
-    return train_data, valid_data
-
-def seperate_data_lables(data):
-    """
-    seperates data and their respective labels 
-    returns two lists; one a list of data elements (40-leng numeric arrays),
-    second list is the labels at their their corresponding indexes 
-    """
-    pass
-
-def batches(batch_size, features, labels):
-    """
-    creates batches of features and labels
-    returns: Batches of (Features, Labels)
-    """
-    assert len(features) == len(labels)
-    output_batches = []
-
-    sample_size = len(features)
-    for start_i in range(0, sample_size, batch_size):
-        end_i = start_i + batch_size
-        batch = [features[start_i:end_i], labels[start_i:end_i]]
-        output_batches.append(batch)
-        
-    return output_batches
-
-
 def classifier(data):
 
     # randomly rearranging the input list 
@@ -78,9 +29,18 @@ def classifier(data):
     # split data into train and valid sets 
     train_data, valid_data = create_train_valid(data, 0.9)
 
+    # deleting the 'data' variable and calling garbage collector to clear up memory
+    del data
+    gc.collect() 
+
     # seperating data elements and their labels 
     train_features, train_labels = seperate_data_lables(train_data)
     valid_features, valid_labels = seperate_data_lables(valid_data)
+
+    # deleting the 'data' variable and calling garbage collector to clear up memory
+    del train_data
+    del valid_data
+    gc.collect() 
 
     # Features and Labels
     n_input = 40  # input array lenght 
