@@ -50,6 +50,22 @@ def seperate_data_lables(data):
     """
     pass
 
+def batches(batch_size, features, labels):
+    """
+    creates batches of features and labels
+    returns: Batches of (Features, Labels)
+    """
+    assert len(features) == len(labels)
+    output_batches = []
+
+    sample_size = len(features)
+    for start_i in range(0, sample_size, batch_size):
+        end_i = start_i + batch_size
+        batch = [features[start_i:end_i], labels[start_i:end_i]]
+        output_batches.append(batch)
+        
+    return output_batches
+
 
 def classifier(data):
 
@@ -63,44 +79,57 @@ def classifier(data):
     train_data, valid_data = create_train_valid(data, 0.9)
 
     # seperating data elements and their labels 
-    train_x, train_y = seperate_data_lables(train_data)
-    valid_x, valid_y = seperate_data_lables(valid_data)
+    train_features, train_labels = seperate_data_lables(train_data)
+    valid_features, valid_labels = seperate_data_lables(valid_data)
 
-    # declare Model's input and output 
-    # what should be the dimensions if batches are passed ? 
-    X = tf.placeholder(tf.float32, shape=(2,1))
-    y_pred = tf.placeholder(tf.float32, shape=(6))
+    # Features and Labels
+    n_input = 40  # input array lenght 
+    n_classes = 6 # no of classes 
+    # the 'None' in dimension below takes care of  the size of the batch 
+    features = tf.placeholder(tf.float32, [None, n_input]) 
+    labels = tf.placeholder(tf.float32, [None, n_classes])
 
     # network architecuture
-    y_pred = dense_nn(X)
+    y_pred = dense_nn(features)
 
-    # loss
-    loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=py_x, labels=y_pred)) # compute costs
-
-    # optimizer
-    optimizer = tf.train.GradientDescentOptimizer(0.01)
-    train = optimizer.minimize(loss)
-
-    # training parameters 
+    # training parameters
+    learning_rate = 0.01
     data_size = len(data)
     no_bacthes = math.ceil(data_size/batch_size)
 
+    # Define loss and optimizer
+    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=y_pred, labels=labels))
+    optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate).minimize(cost) 
+
+    # Calculate accuracy
+    correct_prediction = tf.equal(tf.argmax(y_pred, 1), tf.argmax(labels, 1))
+    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+
     save_file = './train_model.ckpt'
     saver = tf.train.Saver()
+    init = tf.global_variables_initializer()
 
     # Launch the graph
     with tf.Session() as sess:
-         sess.run(tf.global_variables_initializer())
+         sess.run(init)
 
          # Training cycle
          for epoch in range(no_epochs):
+             batch_count = 0 
              # Loop over all batches
-             for i in range(total_batch):
-                 sess.run(optimizer,feed_dict={features: data_x, labels: data_y)
-
-             # Print status for every epochs
-             valid_accuracy = sess.run(accuracy, feed_dict={features: val_x,labels: val_y})
-             print('Epoch {:<3} - Validation Accuracy: {}'.format(epoch,valid_accuracy))
+             for batch_features, batch_labels in batches(batch_size, train_features, train_labels):
+                 sess.run(optimizer, feed_dict={features: batch_features, labels: batch_labels})
+                 batch_count += 1
+                 # printing status for every 5 batches 
+                 if batch_count%5 == 0:
+                    percent_done = (batch_count/no_batches)*100
+                    print ("trained model with {}% of batches",percent_done) # replace it with progress bar 
+                
+             # printing model's performance for every epoch 
+             # calculate accuracy for validation dataset
+             valid_accuracy = sess.run(accuracy, feed_dict={features: valid_features, labels: valid_labels})
+             print('Epoch {:<3} - Validation Accuracy: {}'.format(epoch, valid_accuracy))
+         print("--- trainig complete ----")
 
     # Save the model
     saver.save(sess, save_file)
