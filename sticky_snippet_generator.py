@@ -46,7 +46,7 @@ def randomly_generate_stick_palindrome():
 
 
 # python sticky_snippet_generator.py num_snippets mutation_rate from_ends output_file
-if __name__ == "__main__":
+if __name__ == "_main_":
     num_snippets = int(sys.argv[1])
     mutation_rate = float(sys.argv[2])
     from_ends = int(sys.argv[3])
