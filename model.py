@@ -12,10 +12,10 @@ def dense_nn(X):
     while last layer has softmax activation 
     """
     layer_1_out = tf.contrib.layers.fully_connected(X,40, activation_fn=tf.nn.relu)
-    layer_2_out = tf.contrib.layers.fully_connected(layer_1_out,40, activation_fn=tf.nn.relu)
-    layer_3_out = tf.contrib.layers.fully_connected(layer_2_out,20, activation_fn=tf.nn.relu)
-    layer_4_out = tf.contrib.layers.fully_connected(layer_3_out,10, activation_fn=tf.nn.relu)
-    layer_5_out = tf.contrib.layers.fully_connected(layer_4_out,6, activation_fn=tf.nn.softmax)
+    layer_2_out = tf.contrib.layers.fully_connected(layer_1_out, 40, activation_fn = tf.nn.relu)
+    layer_3_out = tf.contrib.layers.fully_connected(layer_2_out, 20, activation_fn = tf.nn.relu)
+    layer_4_out = tf.contrib.layers.fully_connected(layer_3_out, 10, activation_fn = tf.nn.relu)
+    layer_5_out = tf.contrib.layers.fully_connected(layer_4_out, 6,  activation_fn = None)
     return layer_5_out 
 
 def classifier(data):
