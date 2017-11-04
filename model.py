@@ -19,6 +19,31 @@ def dense_nn(X):
     layer_5_out = tf.contrib.layers.fully_connected(layer_4_out, 6,  activation_fn = None)
     return layer_5_out 
 
+
+# Features and Labels
+n_input = 40  # input array length
+n_classes = 6 # no of classes 
+# the 'None' in dimension below takes care of  the size of the batch 
+features = tf.placeholder(tf.float32, [None, n_input]) 
+labels = tf.placeholder(tf.float32, [None, n_classes])
+
+# network architecuture
+with tf.variable_scope('nn'):
+     y_pred = dense_nn(features)
+    
+# training parameters
+learning_rate = 0.01
+
+# Define loss and optimizer
+with tf.variable_scope('loss'):
+     cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=y_pred, labels=labels))
+     optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate).minimize(cost)
+
+# Calculate accuracy
+correct_prediction = tf.equal(tf.argmax(y_pred, 1), tf.argmax(labels, 1))
+accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+
+
 def train_model(data):
 
     # randomly rearranging the input list 
@@ -37,6 +62,8 @@ def train_model(data):
     del data
     gc.collect() 
 
+    no_batches = math.ceil(data_size/batch_size)
+
     # seperating data elements and their labels 
     train_features, train_labels = seperate_data_lables(train_data)
     valid_features, valid_labels = seperate_data_lables(valid_data)
@@ -45,28 +72,6 @@ def train_model(data):
     del train_data
     del valid_data
     gc.collect() 
-
-    # Features and Labels
-    n_input = 40  # input array length
-    n_classes = 6 # no of classes 
-    # the 'None' in dimension below takes care of  the size of the batch 
-    features = tf.placeholder(tf.float32, [None, n_input]) 
-    labels = tf.placeholder(tf.float32, [None, n_classes])
-
-    # network architecuture
-    y_pred = dense_nn(features)
-
-    # training parameters
-    learning_rate = 0.01
-    no_batches = math.ceil(data_size/batch_size)
-
-    # Define loss and optimizer
-    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=y_pred, labels=labels))
-    optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate).minimize(cost) 
-
-    # Calculate accuracy
-    correct_prediction = tf.equal(tf.argmax(y_pred, 1), tf.argmax(labels, 1))
-    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
     save_file = './train_model.ckpt.meta'
     saver = tf.train.Saver()
@@ -95,8 +100,9 @@ def train_model(data):
          print("--- trainig complete ----")
 
          # Save the model
-         # saver.save(sess, save_file)
-         # print('Trained Model Saved.')
+         with tf.variable_scope('', reuse=True):
+              saver.save(sess, save_file)
+              print('Trained Model Saved.')
     return sess
 
 
@@ -111,27 +117,15 @@ def test_model(saved_file, data):
     # seperating data elements and their labels 
     test_features, test_labels = seperate_data_lables(data)
 
-    # Features and Labels
-    n_input = 40  # input array length
-    n_classes = 6 # no of classes 
+    with tf.Session() as session:
+        with tf.variable_scope('', reuse=True):
+            #session.run(tf.global_variables_initializer())
+            saver = tf.train.Saver()
+            saver.restore(session, saved_file)
+            test_accuracy = session.run(accuracy, feed_dict={features: test_features, labels:test_labels })
+            print('Test Accuracy: {}'.format(test_accuracy))
+            #print session.run(accuracy, {X: INPUT_DATA_SET, Y: OUTPUT_DATA_SET})
 
-    # the 'None' in dimension below takes care of  the size of the batch 
-    features = tf.placeholder(tf.float32, [None, n_input]) 
-    labels = tf.placeholder(tf.float32, [None, n_classes])
-
-    # network architecuture
-    y_pred = dense_nn(features)
-
-    # calculate accuracy
-    correct_prediction = tf.equal(tf.argmax(y_pred, 1), tf.argmax(labels, 1))
-    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-
-    with tf.Session() as sess:
-         new_saver = tf.train.import_meta_graph(saved_file)
-         new_saver.restore(sess, tf.train.latest_checkpoint('./'))
-
-         test_accuracy = sess.run(accuracy, feed_dict={features: test_features, labels:test_labels })
-         #print('Test Accuracy: {}'.format(test_accuracy))
 
 # for testing 
 if __name__ == "__main__":
@@ -139,11 +133,10 @@ if __name__ == "__main__":
    #dir_path = "/home/rocky/cs256_assign/Aihw3/train"
    dir_path = "train"
    data = load(dir_path)
-   print (data[:5])
+   #print (data[:5])
     
    train_model(data)
 
    file_name = 'train_model.ckpt.meta'
    test_model(file_name, data)
 
-   #classifier(data[:5])
