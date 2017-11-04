@@ -14,25 +14,25 @@ def mutate_def(listname):
             ch = np.random.choice(
                 ['A', 'B', 'C', 'D'],
                 1,
-                p=[0.0, mutation_rate_by_3,mutation_rate_by_3,mutation_rate_rest])
+                p=[0.0, 0.333,0.333,0.334])
             listname.append(ch[0])
         elif (listname[i] == 'B'):
             ch = np.random.choice(
                 ['B', 'A', 'C', 'D'],
                 1,
-                p=[0.0, mutation_rate_by_3,mutation_rate_by_3,mutation_rate_rest])
+                p=[0.0, 0.333,0.333,0.334])
             listname.append(ch[0])
         elif (listname[i] == 'C'):
             ch = np.random.choice(
                 ['C', 'B', 'A', 'D'],
                 1,
-                p=[0.0, mutation_rate_by_3,mutation_rate_by_3,mutation_rate_rest])
+                p=[0.0, 0.333,0.333,0.334])
             listname.append(ch[0])
         else:
             ch = np.random.choice(
                 ['D', 'A', 'B', 'C'],
                 1,
-                p=[0.0, mutation_rate_by_3,mutation_rate_by_3,mutation_rate_rest])
+                p=[0.0, 0.333,0.333,0.334])
             listname.append(ch[0])
 
     return listname[l:]
