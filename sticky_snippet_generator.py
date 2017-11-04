@@ -118,7 +118,7 @@ if __name__ == "__main__":
     ini2 = generate_sticky()
     ini3 = generate_sticky()
     n=0
-    
+    output = open(output_file, "w+")
     while(n<num_snippets):
         starts = initial[:from_ends]
         middle=initial[from_ends:40-from_ends]
@@ -132,7 +132,6 @@ if __name__ == "__main__":
             middle.insert(x,starts[x])
         for x in range(0,from_ends):
             middle.append(ends[x])
-        output = open(output_file, "a+")
         for char in middle:
             output.write(char)
         output.write("\n")
@@ -140,7 +139,9 @@ if __name__ == "__main__":
         # print get_label(s)
         n+=1
         initial = middle
-        output.close()
+        if n % 100 == 0:
+            print "Writing file: %s -- %s lines"%(output_file, n)
+    output.close()
     
     
 
