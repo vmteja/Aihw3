@@ -137,7 +137,7 @@ if __name__ == "__main__":
             output.write(char)
         output.write("\n")
         s = "".join(middle)
-        print get_label(s)
+        # print get_label(s)
         n+=1
         initial = middle
         output.close()
