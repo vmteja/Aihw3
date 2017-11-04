@@ -64,7 +64,7 @@ def seperate_data_lables(data):
     for element in data:
         #print(element)
         features.append(element[0])
-        labels.append(element[1])
+        labels.append(element[1][0])
     return features, labels   
 
 
