@@ -75,7 +75,6 @@ def mutate(listname, mutation_rate):
     return listname[l:]
 
 
-
 # In[85]:
 
 def generate_sticky():

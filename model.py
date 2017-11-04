@@ -127,6 +127,10 @@ def test_model(saved_file, data):
             #print session.run(accuracy, {X: INPUT_DATA_SET, Y: OUTPUT_DATA_SET})
 
 
+
+def train(train_features, train_labels, valid_features, valid_labels):
+    return time_taken, validation_accuracy
+
 # for testing 
 if __name__ == "__main__":
    
