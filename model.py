@@ -2,6 +2,7 @@
 import tensorflow as tf
 import math
 from model_helper_funcs import * 
+from data_loader import *
 
 batch_size = 64 
 no_epochs = 3
@@ -21,13 +22,16 @@ def dense_nn(X):
 def classifier(data):
 
     # randomly rearranging the input list 
-    data = randomize_data(data)
+    randomize_data(data)
 
     # converting to numeric 
-    data = convert_to_numeric(data)
+    convert_to_numeric(data)
 
     # split data into train and valid sets 
     train_data, valid_data = create_train_valid(data, 0.9)
+
+    # size of train data 
+    data_size = len(train_data)
 
     # deleting the 'data' variable and calling garbage collector to clear up memory
     del data
@@ -36,6 +40,10 @@ def classifier(data):
     # seperating data elements and their labels 
     train_features, train_labels = seperate_data_lables(train_data)
     valid_features, valid_labels = seperate_data_lables(valid_data)
+
+    print ("----")
+    print ("--",train_features)
+    print ("--",train_labels)
 
     # deleting the 'data' variable and calling garbage collector to clear up memory
     del train_data
@@ -54,8 +62,7 @@ def classifier(data):
 
     # training parameters
     learning_rate = 0.01
-    data_size = len(data)
-    no_bacthes = math.ceil(data_size/batch_size)
+    no_batches = math.ceil(data_size/batch_size)
 
     # Define loss and optimizer
     cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=y_pred, labels=labels))
@@ -83,14 +90,24 @@ def classifier(data):
                  # printing status for every 5 batches 
                  if batch_count%5 == 0:
                     percent_done = (batch_count/no_batches)*100
-                    print ("trained model with {}% of batches",percent_done) # replace it with progress bar 
+                    print "trained model with %d percent  of total batches" %(percent_done) # replace it with progress bar 
                 
              # printing model's performance for every epoch 
              # calculate accuracy for validation dataset
              valid_accuracy = sess.run(accuracy, feed_dict={features: valid_features, labels: valid_labels})
-             print('Epoch {:<3} - Validation Accuracy: {}'.format(epoch, valid_accuracy))
+             print('Epoch {:<1} - Validation Accuracy: {}'.format(epoch, valid_accuracy))
          print("--- trainig complete ----")
 
     # Save the model
-    saver.save(sess, save_file)
-    print('Trained Model Saved.') 
+    #saver.save(sess, save_file)
+    #print('Trained Model Saved.') 
+
+# for testing 
+if __name__ == "__main__":
+   
+   dir_path = "/home/rocky/cs256_assign/Aihw3/train"
+   data = load(dir_path)
+   print (data[:5])
+
+   #classifier(data[:5])
+   classifier(data)
