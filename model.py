@@ -86,7 +86,7 @@ def train_model(data):
                  # printing status for every 5 batches 
                  if batch_count%20 == 0:
                     percent_done = (batch_count/no_batches)*100
-                    print "trained model with %d percent  of total batches" %(percent_done) # replace it with progress bar 
+                    #print "trained model with %d percent  of total batches" %(percent_done) # replace it with progress bar 
                 
              # printing model's performance for every epoch 
              # calculate accuracy for validation dataset
@@ -131,7 +131,7 @@ def test_model(saved_file, data):
          new_saver.restore(sess, tf.train.latest_checkpoint('./'))
 
          test_accuracy = sess.run(accuracy, feed_dict={features: test_features, labels:test_labels })
-         print('Test Accuracy: {}'.format(test_accuracy))
+         #print('Test Accuracy: {}'.format(test_accuracy))
 
 # for testing 
 if __name__ == "__main__":
@@ -141,9 +141,9 @@ if __name__ == "__main__":
    data = load(dir_path)
    print (data[:5])
     
-   classifier(data)
+   train_model(data)
 
-   #file_name = 'train_model.ckpt.meta'
-   #model_test(file_name, data)
+   file_name = 'train_model.ckpt.meta'
+   test_model(file_name, data)
 
    #classifier(data[:5])
