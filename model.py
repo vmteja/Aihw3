@@ -5,7 +5,7 @@ from model_helper_funcs import *
 from data_loader import *
 
 batch_size = 64 
-no_epochs = 3
+no_epochs = 10
 
 def dense_nn(X):
     """
@@ -19,10 +19,10 @@ def dense_nn(X):
     layer_5_out = tf.contrib.layers.fully_connected(layer_4_out, 6,  activation_fn = None)
     return layer_5_out 
 
-def classifier(data):
+def train_model(data):
 
     # randomly rearranging the input list 
-    randomize_data(data)
+    # randomize_data(data)
 
     # converting to numeric 
     convert_to_numeric(data)
@@ -40,10 +40,6 @@ def classifier(data):
     # seperating data elements and their labels 
     train_features, train_labels = seperate_data_lables(train_data)
     valid_features, valid_labels = seperate_data_lables(valid_data)
-
-    print ("----")
-    print ("--",train_features)
-    print ("--",train_labels)
 
     # deleting the 'data' variable and calling garbage collector to clear up memory
     del train_data
@@ -72,7 +68,7 @@ def classifier(data):
     correct_prediction = tf.equal(tf.argmax(y_pred, 1), tf.argmax(labels, 1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-    save_file = './train_model.ckpt'
+    save_file = './train_model.ckpt.meta'
     saver = tf.train.Saver()
     init = tf.global_variables_initializer()
 
@@ -88,7 +84,7 @@ def classifier(data):
                  sess.run(optimizer, feed_dict={features: batch_features, labels: batch_labels})
                  batch_count += 1
                  # printing status for every 5 batches 
-                 if batch_count%5 == 0:
+                 if batch_count%20 == 0:
                     percent_done = (batch_count/no_batches)*100
                     print "trained model with %d percent  of total batches" %(percent_done) # replace it with progress bar 
                 
@@ -98,16 +94,56 @@ def classifier(data):
              print('Epoch {:<1} - Validation Accuracy: {}'.format(epoch, valid_accuracy))
          print("--- trainig complete ----")
 
-    # Save the model
-    #saver.save(sess, save_file)
-    #print('Trained Model Saved.') 
+         # Save the model
+         # saver.save(sess, save_file)
+         # print('Trained Model Saved.')
+    return sess
+
+
+def test_model(saved_file, data):
+
+    # converting to numeric 
+    convert_to_numeric(data)
+
+    # size of train data 
+    data_size = len(data)
+
+    # seperating data elements and their labels 
+    test_features, test_labels = seperate_data_lables(data)
+
+    # Features and Labels
+    n_input = 40  # input array length
+    n_classes = 6 # no of classes 
+
+    # the 'None' in dimension below takes care of  the size of the batch 
+    features = tf.placeholder(tf.float32, [None, n_input]) 
+    labels = tf.placeholder(tf.float32, [None, n_classes])
+
+    # network architecuture
+    y_pred = dense_nn(features)
+
+    # calculate accuracy
+    correct_prediction = tf.equal(tf.argmax(y_pred, 1), tf.argmax(labels, 1))
+    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+
+    with tf.Session() as sess:
+         new_saver = tf.train.import_meta_graph(saved_file)
+         new_saver.restore(sess, tf.train.latest_checkpoint('./'))
+
+         test_accuracy = sess.run(accuracy, feed_dict={features: test_features, labels:test_labels })
+         print('Test Accuracy: {}'.format(test_accuracy))
 
 # for testing 
 if __name__ == "__main__":
    
-   dir_path = "/home/rocky/cs256_assign/Aihw3/train"
+   #dir_path = "/home/rocky/cs256_assign/Aihw3/train"
+   dir_path = "train"
    data = load(dir_path)
    print (data[:5])
+    
+   classifier(data)
+
+   #file_name = 'train_model.ckpt.meta'
+   #model_test(file_name, data)
 
    #classifier(data[:5])
-   classifier(data)
