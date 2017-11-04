@@ -44,7 +44,7 @@ correct_prediction = tf.equal(tf.argmax(y_pred, 1), tf.argmax(labels, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 
-def train_model(data):
+def train_model(model_filename, data):
 
     # randomly rearranging the input list 
     # randomize_data(data)
@@ -73,7 +73,7 @@ def train_model(data):
     del valid_data
     gc.collect() 
 
-    save_file = './train_model.ckpt.meta'
+    save_file = model_filename
     saver = tf.train.Saver()
     init = tf.global_variables_initializer()
 
