@@ -102,6 +102,10 @@ def classifier(data):
     #saver.save(sess, save_file)
     #print('Trained Model Saved.') 
 
+
+def train(train_features, train_labels, valid_features, valid_labels):
+    return time_taken, validation_accuracy
+
 # for testing 
 if __name__ == "__main__":
    

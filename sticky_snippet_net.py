@@ -1,18 +1,55 @@
 import sys
-
+from random import shuffle
+import tensorflow as tf
 import data_loader
 
 
-def trainer(model_file, data):
+def __train(labelled_data):
     pass
+
+
+def __save_session(session, filename):
+    saver = tf.train.Saver()
+    saver.save(session, filename)
+
+
+def __load_session(filename):
+    session = tf.Session()
+    saver = tf.train.Saver()
+    saver.restore(session, filename)
+    return session
+
+
+def __test(session, data):
+    pass
+
+
+def trainer(model_file, data):
+    shuffle(data)
+    session = __train(data)
+    __save_session(session, model_file)
 
 
 def cv_5fold_trainer(model_file, data):
-    pass
+    data = list(data)
+    k = 5
+    shuffle(data)
+    slices = [data[i::k] for i in xrange(k)]
+
+    for i in xrange(k):
+        validation = slices[i]
+        training = [item
+                    for s in slices if s is not validation
+                    for item in s]
+        session = __train(training)
+        __save_session(session, model_file)
+        __test(session, validation)
 
 
 def tester(model_file, data):
-    pass
+    shuffle(data)
+    session = __load_session(model_file)
+    classifications = __test(session, data)
 
 
 
